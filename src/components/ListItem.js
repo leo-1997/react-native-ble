@@ -9,10 +9,8 @@ import {connect} from 'react-redux';
 class ListItem extends Component {
   _onItemPress() {
     console.log('pressed index:', this.props.itemIndex);
-    // console.log('this is listItem props ', this.props);
     this.props.selectRow(this.props.itemIndex);
     this.props.connectBle(this.props.item.item.id);
-    // this.props.toConnectBle(this.props.item.item.id);
   }
 
   render() {
@@ -24,7 +22,7 @@ class ListItem extends Component {
       <TouchableOpacity onPress={this._onItemPress.bind(this)}>
         <View>
           <CardSection>
-            {this.props.selectedIndex === this.props.itemIndex ? (
+            {this.props.selectedIndex.includes(this.props.itemIndex) ? (
               <Icon name="check" type="font-awesome" color="#0099cc" />
             ) : null}
             <Text style={styles.titleStyle}>{bleName}</Text>

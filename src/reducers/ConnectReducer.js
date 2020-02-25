@@ -10,8 +10,8 @@ import _ from 'lodash';
 
 const INITIAL_STATE = {
   BLEList: [],
-  connectedDevice: {},
-  heartBeats: 0,
+  connectedDevice: [],
+  heartBeats: [0, 0],
   status: 'disconnected',
 };
 
@@ -26,11 +26,14 @@ const BLEReducer = (state = INITIAL_STATE, action) => {
         status: state.status,
       };
     case CONNECTED_BLE:
-      return {...state, connectedDevice: action.payload};
+      const newConnectedDevice = [...state.connectedDevice, action.payload];
+      return {...state, connectedDevice: newConnectedDevice};
     case DISCONNECTED_BLE:
-      return {...state, connectedDevice: {}};
+      return {...state, connectedDevice: []};
     case UPDATE_HEARTBEAT:
-      return {...state, heartBeats: action.payload};
+      let newHeartBeats = [...state.heartBeats];
+      newHeartBeats[action.payload.index] = action.payload.value;
+      return {...state, heartBeats: newHeartBeats};
     case CHANGE_STATUS:
       return {...state, status: action.payload};
     case INITIALIZE_LIST:

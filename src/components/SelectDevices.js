@@ -81,8 +81,16 @@ class SelectDevices extends Component {
 
   //Retrieve new data
   handleUpdateValue = data => {
+    console.log('props inside selectDevices ', this.props);
     console.log('received data!', data);
-    this.props.updateHeartBeat(data.value[1]);
+    let index = this.props.connectedDevice.indexOf(data.peripheral);
+    if (data.value[0] === 44) {
+      // Actxa Spark+ begins to transfer heartbeat value
+      this.props.updateHeartBeat({value: data.value[1], index});
+    } else if (data.value[0] === 16) {
+      //Polar H10 begins to transfer heartbeat value
+      this.props.updateHeartBeat({value: data.value[1], index});
+    }
   };
 
   _toggleSwitch = isScanning => {
@@ -91,7 +99,7 @@ class SelectDevices extends Component {
     } else {
       BluetoothManager.stopScan();
       if (!_.isEmpty(this.props.connectedDevice)) {
-        BluetoothManager.disconnect(this.props.connectedDevice);
+        this.props.connectedDevice.forEach(BluetoothManager.disconnect);
       }
     }
   };

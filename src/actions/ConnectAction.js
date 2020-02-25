@@ -78,9 +78,9 @@ export const bleDisconnected = id => {
   };
 };
 
-export const updateHeartBeat = heartBeat => {
+export const updateHeartBeat = ({value, index}) => {
   return {
     type: UPDATE_HEARTBEAT,
-    payload: heartBeat,
+    payload: {value, index},
   };
 };

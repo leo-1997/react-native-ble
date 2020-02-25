@@ -1,12 +1,11 @@
 import {SELECT_ROW, INITIALIZE_LIST} from '../actions/types';
 
-const INITIAL_STATE = -1;
+const INITIAL_STATE = [];
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case SELECT_ROW:
-      console.log('inside select reducer action is ', action);
-      return action.payload;
+      return [...state, action.payload];
     case INITIALIZE_LIST:
       return INITIAL_STATE;
     default:
