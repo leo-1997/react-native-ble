@@ -8,16 +8,13 @@ import {connect} from 'react-redux';
 
 class ListItem extends Component {
   _onItemPress() {
-    console.log('pressed index:', this.props.itemIndex);
     this.props.selectRow(this.props.itemIndex);
     this.props.connectBle(this.props.item.item.id);
   }
 
   render() {
     const {name} = this.props.item.item;
-    // console.log('props is ', this.props);
     const bleName = name === undefined ? 'Unknown Device' : name;
-    // console.log('name is ', name);
     return (
       <TouchableOpacity onPress={this._onItemPress.bind(this)}>
         <View>
@@ -36,7 +33,6 @@ class ListItem extends Component {
 const styles = {
   titleStyle: {
     fontSize: 20,
-    paddingLeft: 15,
   },
 };
 

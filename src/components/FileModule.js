@@ -5,7 +5,7 @@ const Heartbeat_records = 'Heartbeat_records';
 const path =
   Platform.OS === 'ios'
     ? RNFS.LibraryDirectoryPath + '/' + Heartbeat_records
-    : RNFS.ExternalDirectoryPath + '/' + Heartbeat_records;
+    : RNFS.ExternalDirectoryPath;
 
 class FileModule {
   /**
@@ -57,6 +57,7 @@ class FileModule {
   createFile(day, time) {
     let filePath = path + '/' + day + ' ' + time + '.txt';
     console.log('path is ', filePath);
+
     RNFS.writeFile(
       filePath,
       'Heartbeat record ' + day + ' ' + time + '\n',
@@ -91,7 +92,6 @@ class FileModule {
   deleteFile(pathToDelete) {
     // create a path you want to delete
     // var path = RNFS.DocumentDirectoryPath + '/test.txt';
-
     return (
       RNFS.unlink(pathToDelete)
         .then(() => {

@@ -7,8 +7,11 @@ import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.rnfs.RNFSPackage;
+import com.facebook.react.shell.MainReactPackage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Arrays;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -18,6 +21,14 @@ public class MainApplication extends Application implements ReactApplication {
         public boolean getUseDeveloperSupport() {
           return BuildConfig.DEBUG;
         }
+
+        // @Override
+        // protected List<ReactPackage> getPackages() {
+        //   return Arrays.<ReactPackage>asList(
+        //       new MainReactPackage(),
+        //       new RNFSPackage() // <-- Register package here or packages.add(new RNFSPackage());
+        //   );
+        // }
 
         @Override
         protected List<ReactPackage> getPackages() {

@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import Router from './src/Router';
+import {Header} from './src/components/common';
 import {Provider} from 'react-redux';
 import BleManager from 'react-native-ble-manager';
 import store from './src/store';
+import MainPage from './src/components/MainPage';
 
 class App extends Component {
   constructor(props) {
@@ -13,7 +14,8 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <Router />
+        <Header headerText="Heartbeat" />
+        <MainPage />
       </Provider>
     );
   }

@@ -9,6 +9,7 @@ const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 class BleModule {
   constructor() {
     this.initUUID();
+    console.log('BleModule started');
   }
 
   /**
@@ -29,6 +30,7 @@ class BleModule {
    * Scan for available peripherals for 10 seconds
    * */
   scan() {
+    console.log('scan!!!!');
     store.dispatch(startScan());
   }
 
@@ -148,15 +150,16 @@ class BleModule {
    * Disconnect from a peripheral.
    * */
   disconnect(id) {
+    console.log('disconnecting ', id);
     store.dispatch(toDisconnectBle(id));
   }
 
   /**
    * Start the notification on the specified characteristic.
    * */
-  startNotification(peripheralId, index = 0) {
+  startNotification(device, index = 0) {
     BleManager.startNotification(
-      peripheralId,
+      device.id,
       this.nofityServiceUUID[0],
       this.nofityCharacteristicUUID[0],
     )
@@ -165,7 +168,9 @@ class BleModule {
         setTimeout(() => {
           //Due to difference structure of received peripheral info in iOS and Android
           let indx = Platform.OS == 'android' ? 1 : 0;
-          this.write(peripheralId, indx);
+          if (!device.name.includes('Polar')) {
+            this.write(device.id, indx);
+          }
         }, 500);
       })
       .catch(error => {
