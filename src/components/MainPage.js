@@ -1,19 +1,16 @@
 import React, {Component} from 'react';
 import {Card, Button, CardSection} from '../components/common';
-import {Text, Modal} from 'react-native';
+import {View, Text, Modal, TouchableOpacity} from 'react-native';
+import Toast from 'react-native-easy-toast';
 import {connect} from 'react-redux';
-import {Alert, Platform, PermissionsAndroid, Switch} from 'react-native';
+import {Icon} from 'react-native-elements';
+import {Alert, Platform, PermissionsAndroid} from 'react-native';
 import FileModule from './FileModule';
 import FileList from './FileList';
 import BleModule from './BleModule';
 import {
   addBLE,
-  startScan,
-  stopScan,
-  initializeList,
-  changeStatus,
   bleConnected,
-  toDisconnectBle,
   bleDisconnected,
   updateHeartBeat,
 } from '../actions';
@@ -35,8 +32,11 @@ class Main extends Component {
       currentTime: null,
       modalFileListVisible: false,
       modalBleListVisible: false,
+      // stopped / paused / recording
+      recordingStatus: 'stopped',
       recording: false,
       storedPath: '',
+      connectedDeviceName: [],
     };
   }
 
@@ -66,7 +66,6 @@ class Main extends Component {
   }
 
   handleDiscoverPeripheral = device => {
-    // console.log('Discovered new device! ' + device.id + ' ' + device.name);
     if (device.name != null) {
       this.props.addBLE(device);
     }
@@ -77,15 +76,27 @@ class Main extends Component {
     BleManager.retrieveServices(args.peripheral).then(peripheralInfo => {
       BluetoothManager.getUUID(peripheralInfo);
       BluetoothManager.startNotification(peripheralInfo);
+      this.setState({
+        connectedDeviceName: [
+          ...this.state.connectedDeviceName,
+          peripheralInfo.name,
+        ],
+      });
     });
   };
 
   handleDisconnectPeripheral = args => {
     this.props.bleDisconnected(args.peripheral);
+    this.setState({
+      connectedDeviceName: [],
+    });
     this.numOfDevices > 0 ? this.numOfDevices-- : 0;
-    if (this.state.recording) {
+    if (
+      this.state.recordingStatus === 'recording' ||
+      this.state.recordingStatus === 'paused'
+    ) {
       Alert.alert('Device has disconnected, stop recording!');
-      this._toggleSwitch(false);
+      this._onClickStopped();
     }
     console.log('BleManagerDisconnectPeripheral:', args);
   };
@@ -187,26 +198,47 @@ class Main extends Component {
     this.setState({modalBleListVisible: false});
   }
 
-  _toggleSwitch = recording => {
-    let path = FileManager.getFilePath();
-    console.log('recording file path is ', path);
-    console.log(recording);
-
-    if (recording) {
-      if (path.length === 0 || this.props.connectedDevice.length === 0) {
-        Alert.alert('Please create file and connect devices first!');
-        return;
-      } else {
-        this.timer = setInterval(this._recordHeartbeat.bind(this), 1000);
-      }
-    } else {
-      clearInterval(this.timer);
+  _onClickRecording = () => {
+    if (this.props.connectedDevice.length === 0) {
+      Alert.alert('Please connect devices first!');
+      return;
     }
-    this.setState({recording: recording});
+    if (FileManager.getFilePath().length === 0) {
+      FileManager.createFile(
+        this._getCurrentDay(),
+        this._getCurrentTime(),
+      ).then(() => {
+        this.refs.toast.show('New File Created!', 1000);
+        this.timer = setInterval(this._recordHeartbeat.bind(this), 1000);
+      });
+    } else {
+      this.timer = setInterval(this._recordHeartbeat.bind(this), 1000);
+    }
+    console.log('Recording');
+    this.setState({
+      recordingStatus: 'recording',
+    });
+  };
+
+  _onClickPaused = () => {
+    clearInterval(this.timer);
+    console.log('paused');
+    this.setState({
+      recordingStatus: 'paused',
+    });
+  };
+
+  _onClickStopped = () => {
+    clearInterval(this.timer);
+    FileManager.clearFilePath();
+    console.log('Stopped');
+    this.setState({
+      recordingStatus: 'stopped',
+    });
   };
 
   _recordHeartbeat() {
-    if (this.props.bluetoothState == 'disconnected') {
+    if (this.props.bluetoothState === 'disconnected') {
       clearInterval(this.timer);
       this.setState({recording: false});
       return;
@@ -217,6 +249,10 @@ class Main extends Component {
       Number.parseInt(this.props.heartBeat[0], 0) +
       ' ' +
       Number.parseInt(this.props.heartBeat[1], 0) +
+      ' ' +
+      Number.parseInt(this.props.heartBeat[2], 0) +
+      ' ' +
+      Number.parseInt(this.props.heartBeat[3], 0) +
       '\n';
     console.log('record!!! ', message);
     FileManager.writeFile(message);
@@ -226,9 +262,26 @@ class Main extends Component {
     const {textStyle, cardSectionStyle} = styles;
     let heartBeat1 = Number.parseInt(this.props.heartBeat[0], 0);
     let heartBeat2 = Number.parseInt(this.props.heartBeat[1], 0);
+    let heartBeat3 = Number.parseInt(this.props.heartBeat[2], 0);
+    let heartBeat4 = Number.parseInt(this.props.heartBeat[3], 0);
+
+    let device1Name = this.state.connectedDeviceName[0];
+    let device2Name = this.state.connectedDeviceName[1];
+    let device3Name = this.state.connectedDeviceName[2];
+    let device4Name = this.state.connectedDeviceName[3];
 
     return (
       <Card>
+        <Toast
+          ref="toast"
+          style={{backgroundColor: 'grey'}}
+          position="top"
+          positionValue={500}
+          fadeInDuration={750}
+          fadeOutDuration={1000}
+          opacity={0.8}
+          textStyle={{color: 'white'}}
+        />
         <Modal
           animationType="slide"
           transparent={false}
@@ -260,21 +313,10 @@ class Main extends Component {
         <CardSection>
           <Button
             onPress={() => {
-              FileManager.createFile(
-                this._getCurrentDay(),
-                this._getCurrentTime(),
-              );
-            }}>
-            Create Files
-          </Button>
-          <Button
-            onPress={() => {
               this._setFileListModalVisible(true);
             }}>
             Lookup Files
           </Button>
-        </CardSection>
-        <CardSection>
           <Button
             onPress={() => {
               this._setBleListModalVisible(true);
@@ -283,16 +325,80 @@ class Main extends Component {
           </Button>
         </CardSection>
         <CardSection>
-          <Text>Recording</Text>
-          <Switch
-            onValueChange={this._toggleSwitch}
-            value={this.state.recording}
-          />
+          <Text>Recoding Status: {this.state.recordingStatus}</Text>
+        </CardSection>
+        <CardSection>
+          <TouchableOpacity
+            disabled={this.state.recordingStatus === 'recording'}
+            style={{paddingStart: 1}}
+            onPress={this._onClickRecording}>
+            <View>
+              <Icon
+                name="play"
+                size={35}
+                type="font-awesome"
+                color={
+                  this.state.recordingStatus === 'recording'
+                    ? '#DCDCDC'
+                    : '#0099cc'
+                }
+              />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            disabled={this.state.recordingStatus !== 'recording'}
+            style={{paddingStart: 30}}
+            onPress={this._onClickPaused}>
+            <View>
+              <Icon
+                name="pause"
+                size={35}
+                type="font-awesome"
+                color={
+                  this.state.recordingStatus !== 'recording'
+                    ? '#DCDCDC'
+                    : '#0099cc'
+                }
+              />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            disabled={this.state.recordingStatus === 'stopped'}
+            style={{paddingStart: 30}}
+            onPress={this._onClickStopped}>
+            <View>
+              <Icon
+                name="stop"
+                size={35}
+                type="font-awesome"
+                color={
+                  this.state.recordingStatus === 'stopped'
+                    ? '#DCDCDC'
+                    : '#0099cc'
+                }
+              />
+            </View>
+          </TouchableOpacity>
         </CardSection>
         <CardSection style={cardSectionStyle}>
-          <Text style={textStyle}>Device1: {heartBeat1}</Text>
-          <Text style={textStyle}>Device2: {heartBeat2}</Text>
+          <Text style={textStyle}>
+            {device1Name === undefined ? 'Device1' : device1Name}: {heartBeat1}{' '}
+            BPM
+          </Text>
+          <Text style={textStyle}>
+            {device2Name === undefined ? 'Device2' : device2Name}: {heartBeat2}{' '}
+            BPM
+          </Text>
+          <Text style={textStyle}>
+            {device3Name === undefined ? 'Device3' : device3Name}: {heartBeat3}{' '}
+            BPM
+          </Text>
+          <Text style={textStyle}>
+            {device4Name === undefined ? 'Device4' : device4Name}: {heartBeat4}{' '}
+            BPM
+          </Text>
         </CardSection>
+        <Text style={{position: 'absolute', bottom: 0, right: 0}}>V1.1</Text>
       </Card>
     );
   }
@@ -307,6 +413,7 @@ const styles = {
   },
   cardSectionStyle: {
     alignItems: 'center',
+    flexDirection: 'column',
   },
 };
 
@@ -323,12 +430,7 @@ const mapStateToProps = state => {
 // eslint-disable-next-line prettier/prettier
 export default connect(mapStateToProps, {
   addBLE,
-  initializeList,
-  stopScan,
-  startScan,
-  changeStatus,
   bleConnected,
-  toDisconnectBle,
   bleDisconnected,
   updateHeartBeat,
 })(Main);

@@ -179,6 +179,7 @@ class BleModule {
   }
 
   write(peripheralId, index) {
+    let password = '3C732489A5B4C700000000000000007C';
     let command1 = '1901000000000000000000000000001A';
     let command2 = '2C01000000000000000000000000002D';
     setTimeout(() => {
@@ -186,7 +187,7 @@ class BleModule {
         peripheralId,
         this.writeWithResponseServiceUUID[index],
         this.writeWithResponseCharacteristicUUID[index],
-        command1,
+        password,
       )
         .then(
           setTimeout(() => {
@@ -194,7 +195,16 @@ class BleModule {
               peripheralId,
               this.writeWithResponseServiceUUID[index],
               this.writeWithResponseCharacteristicUUID[index],
-              command2,
+              command1,
+            ).then(
+              setTimeout(() => {
+                BleManager.write(
+                  peripheralId,
+                  this.writeWithResponseServiceUUID[index],
+                  this.writeWithResponseCharacteristicUUID[index],
+                  command2,
+                );
+              }, 500),
             );
           }, 500),
         )

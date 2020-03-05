@@ -11,7 +11,7 @@ import _ from 'lodash';
 const INITIAL_STATE = {
   BLEList: [],
   connectedDevice: [],
-  heartBeats: [0, 0],
+  heartBeats: [0, 0, 0, 0],
   status: 'disconnected',
 };
 

@@ -22,7 +22,7 @@ export const startScan = () => {
 
 export const scan = () => {
   return (dispatch, getState, BleManager) => {
-    BleManager.scan([], 10, false).then(() =>
+    BleManager.scan([], 20, false).then(() =>
       dispatch(changeStatus('scanning')),
     );
   };

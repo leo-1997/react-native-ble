@@ -1,5 +1,5 @@
 import RNFS from 'react-native-fs';
-import {Alert, Platform} from 'react-native';
+import {Platform} from 'react-native';
 
 const Heartbeat_records = 'Heartbeat_records';
 const path =
@@ -50,11 +50,15 @@ class FileModule {
     return RNFS.readDir(path);
   }
 
+  clearFilePath() {
+    this.filePath = '';
+  }
+
   getFilePath() {
     return this.filePath;
   }
 
-  createFile(day, time) {
+  async createFile(day, time) {
     let filePath = path + '/' + day + ' ' + time + '.txt';
     console.log('path is ', filePath);
 
@@ -66,12 +70,6 @@ class FileModule {
       .then(success => {
         this.filePath = filePath;
         console.log('FILE CREATED' + ' ' + filePath);
-        Alert.alert(
-          'New File has been Created',
-          '',
-          [{text: 'OK', onPress: () => console.log('OK Pressed')}],
-          {cancelable: false},
-        );
       })
       .catch(err => {
         console.log(err.message);
@@ -85,13 +83,12 @@ class FileModule {
         console.log('Message written');
       })
       .catch(error => {
-        console.err(error);
+        console.error(error);
       });
   }
 
   deleteFile(pathToDelete) {
     // create a path you want to delete
-    // var path = RNFS.DocumentDirectoryPath + '/test.txt';
     return (
       RNFS.unlink(pathToDelete)
         .then(() => {

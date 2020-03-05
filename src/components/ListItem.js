@@ -3,7 +3,7 @@ import {View, Text} from 'react-native';
 import {CardSection} from './common';
 import {TouchableOpacity} from 'react-native';
 import {Icon} from 'react-native-elements';
-import {toConnectBle, selectRow} from '../actions';
+import {selectRow} from '../actions';
 import {connect} from 'react-redux';
 
 class ListItem extends Component {
@@ -13,7 +13,8 @@ class ListItem extends Component {
   }
 
   render() {
-    const {name} = this.props.item.item;
+    console.log('Rendering item, item is ', this.props.item);
+    const {name, id} = this.props.item.item;
     const bleName = name === undefined ? 'Unknown Device' : name;
     return (
       <TouchableOpacity onPress={this._onItemPress.bind(this)}>
@@ -22,7 +23,11 @@ class ListItem extends Component {
             {this.props.selectedIndex.includes(this.props.itemIndex) ? (
               <Icon name="check" type="font-awesome" color="#0099cc" />
             ) : null}
-            <Text style={styles.titleStyle}>{bleName}</Text>
+            <CardSection
+              style={{flexDirection: 'column', alignItems: 'center'}}>
+              <Text style={styles.titleStyle}>{bleName}</Text>
+              <Text style={styles.titleStyle}>{id}</Text>
+            </CardSection>
           </CardSection>
         </View>
       </TouchableOpacity>
@@ -37,4 +42,4 @@ const styles = {
 };
 
 // eslint-disable-next-line prettier/prettier
-export default connect(null, {toConnectBle, selectRow})(ListItem);
+export default connect(null, {selectRow})(ListItem);

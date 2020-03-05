@@ -79,6 +79,7 @@ class SelectDevices extends Component {
             }
           />
         </CardSection>
+        <Text style={{textAlign: 'center'}}>Scan for 20 seconds</Text>
         <View style={{flex: 0.9}}>
           <FlatList
             data={BLEList}
