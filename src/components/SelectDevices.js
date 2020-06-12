@@ -6,6 +6,12 @@ import {FlatList} from 'react-native';
 import ListItem from './ListItem';
 import _ from 'lodash';
 
+/**
+ * Selection pages for scanning devices
+ * It uses a toggle to handle startScan/stopScan.
+ * If any one of current connecting devices disconnected, all connections will end automatically.
+ * Scanning has four status: disconnect, scanning, connecting and connected;
+ */
 class SelectDevices extends Component {
   constructor(props) {
     super(props);
@@ -20,7 +26,6 @@ class SelectDevices extends Component {
     } else {
       this.props.BluetoothManager.stopScan();
       if (this.props.bluetoothState === 'connected') {
-        console.log('here!!!!!');
         this._disconnectAll();
       }
     }

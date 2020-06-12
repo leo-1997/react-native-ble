@@ -9,18 +9,17 @@ const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 class BleModule {
   constructor() {
     this.initUUID();
-    console.log('BleModule started');
   }
 
   /**
-   * 添加监听器
-   * 所有监听事件如下
-   * BleManagerStopScan：扫描结束监听
-   * BleManagerDiscoverPeripheral：扫描到一个新设备
-   * BleManagerDidUpdateState：蓝牙状态改变
-   * BleManagerDidUpdateValueForCharacteristic：接收到新数据
-   * BleManagerConnectPeripheral：蓝牙设备已连接
-   * BleManagerDisconnectPeripheral：蓝牙设备已断开连接
+   * Adding all the listeners
+   * There are six types of listener used:
+   * BleManagerStopScan
+   * BleManagerDiscoverPeripheral
+   * BleManagerDidUpdateState
+   * BleManagerDidUpdateValueForCharacteristic
+   * BleManagerConnectPeripheral
+   * BleManagerDisconnectPeripheral
    * */
   addListener(str, fun) {
     return bleManagerEmitter.addListener(str, fun);
@@ -30,7 +29,6 @@ class BleModule {
    * Scan for available peripherals for 10 seconds
    * */
   scan() {
-    console.log('scan!!!!');
     store.dispatch(startScan());
   }
 
@@ -117,26 +115,6 @@ class BleModule {
         }
       }
     }
-    console.log('readServiceUUID', this.readServiceUUID);
-    console.log('readCharacteristicUUID', this.readCharacteristicUUID);
-    console.log(
-      'writeWithResponseServiceUUID',
-      this.writeWithResponseServiceUUID,
-    );
-    console.log(
-      'writeWithResponseCharacteristicUUID',
-      this.writeWithResponseCharacteristicUUID,
-    );
-    console.log(
-      'writeWithoutResponseServiceUUID',
-      this.writeWithoutResponseServiceUUID,
-    );
-    console.log(
-      'writeWithoutResponseCharacteristicUUID',
-      this.writeWithoutResponseCharacteristicUUID,
-    );
-    console.log('nofityServiceUUID', this.nofityServiceUUID);
-    console.log('nofityCharacteristicUUID', this.nofityCharacteristicUUID);
   }
 
   /**
@@ -164,7 +142,6 @@ class BleModule {
       this.nofityCharacteristicUUID[0],
     )
       .then(() => {
-        console.log('Notification started');
         setTimeout(() => {
           //Due to difference structure of received peripheral info in iOS and Android
           let indx = Platform.OS == 'android' ? 1 : 0;

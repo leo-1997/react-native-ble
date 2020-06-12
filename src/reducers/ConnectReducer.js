@@ -1,3 +1,9 @@
+/**
+ * Handle all the connection related reducers.
+ * Currently, it supported receiving signal from four devices, number of devices can be further increased
+ * by changing the size of heartBeasts array in the INITIAL_STATE.
+ */
+
 import {
   ADD_BLE,
   CHANGE_STATUS,

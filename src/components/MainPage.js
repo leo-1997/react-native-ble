@@ -20,6 +20,11 @@ import SelectDevices from './SelectDevices';
 const FileManager = new FileModule();
 const BluetoothManager = new BleModule();
 
+/**
+ * Main page of the App. Handle lookupFiles, scan and receive heartbeat operations
+ * lookupFile functionality is achieved through FileModule and Bluetooth BLE scanning, connecting is achieved
+ * through BleModule
+ */
 class Main extends Component {
   constructor(props) {
     super(props);
@@ -40,6 +45,9 @@ class Main extends Component {
     };
   }
 
+  /**
+   * react-native-ble-manager uses bunch of listeners to handle all the Bluetooth connection events
+   */
   _handleBleListeners() {
     this.numOfDevices = 0;
     // console.log('Adding ble listeners!!!');
@@ -133,6 +141,9 @@ class Main extends Component {
     clearInterval(this.timer);
   }
 
+  /**
+   * In order to connect bluetooth, the app needs the permission to access location [Android only]
+   */
   async _handleLocationPermission() {
     if (Platform.OS == 'android') {
       try {
@@ -186,7 +197,7 @@ class Main extends Component {
     this.setState({modalFileListVisible: visible});
   }
 
-  onCloseFileListModal() {
+  _onCloseFileListModal() {
     this.setState({modalFileListVisible: false});
   }
 
@@ -194,7 +205,7 @@ class Main extends Component {
     this.setState({modalBleListVisible: visible});
   }
 
-  onCloseBleListModal() {
+  _onCloseBleListModal() {
     this.setState({modalBleListVisible: false});
   }
 
@@ -291,7 +302,7 @@ class Main extends Component {
           }}>
           <SelectDevices
             onClose={() => {
-              this.onCloseBleListModal();
+              this._onCloseBleListModal();
             }}
             BluetoothManager={BluetoothManager}
           />
@@ -305,7 +316,7 @@ class Main extends Component {
           }}>
           <FileList
             onClose={() => {
-              this.onCloseFileListModal();
+              this._onCloseFileListModal();
             }}
             fileManager={FileManager}
           />

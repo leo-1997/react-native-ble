@@ -13,7 +13,6 @@ class ListItem extends Component {
   }
 
   render() {
-    console.log('Rendering item, item is ', this.props.item);
     const {name, id} = this.props.item.item;
     const bleName = name === undefined ? 'Unknown Device' : name;
     return (

@@ -1,3 +1,7 @@
+/**
+ * Handle all the connection related actions.
+ */
+
 import {
   ADD_BLE,
   CHANGE_STATUS,

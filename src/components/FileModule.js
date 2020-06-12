@@ -9,7 +9,7 @@ const path =
 
 class FileModule {
   /**
-   * 常用文件存储目录(ios与android)
+   * Frequent file locations in iOS and Android
    *
    * RNFS.MainBundlePath (not available on Android)
    * RNFS.CachesDirectoryPath (absolute path of Cache Directory)
@@ -21,22 +21,21 @@ class FileModule {
    */
 
   constructor() {
-    console.log('MainBundlePath: ', RNFS.MainBundlePath);
-    console.log('CachesDirectoryPath: ', RNFS.CachesDirectoryPath);
-    console.log('DocumentDirectoryPath: ', RNFS.DocumentDirectoryPath);
-    console.log('TemporaryDirectoryPath: ', RNFS.TemporaryDirectoryPath);
-    console.log('LibraryDirectoryPath: ', RNFS.LibraryDirectoryPath);
-    console.log('ExternalDirectoryPath: ', RNFS.ExternalDirectoryPath);
-    console.log(
-      'ExternalStorageDirectoryPath: ',
-      RNFS.ExternalStorageDirectoryPath,
-    );
+    // console.log('MainBundlePath: ', RNFS.MainBundlePath);
+    // console.log('CachesDirectoryPath: ', RNFS.CachesDirectoryPath);
+    // console.log('DocumentDirectoryPath: ', RNFS.DocumentDirectoryPath);
+    // console.log('TemporaryDirectoryPath: ', RNFS.TemporaryDirectoryPath);
+    // console.log('LibraryDirectoryPath: ', RNFS.LibraryDirectoryPath);
+    // console.log('ExternalDirectoryPath: ', RNFS.ExternalDirectoryPath);
+    // console.log(
+    //   'ExternalStorageDirectoryPath: ',
+    //   RNFS.ExternalStorageDirectoryPath,
+    // );
     this.createFile = this.createFile.bind(this);
     this.filePath = '';
   }
 
   checkDir() {
-    console.log('path is ', path);
     RNFS.exists(path).then(result => {
       if (!result) {
         RNFS.mkdir(path)
@@ -77,14 +76,9 @@ class FileModule {
   }
 
   writeFile(message) {
-    console.log('writing to file ', this.filePath);
-    RNFS.write(this.filePath, message.toString(), -1, 'utf8')
-      .then(success => {
-        console.log('Message written');
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    RNFS.write(this.filePath, message.toString(), -1, 'utf8').catch(error => {
+      console.error(error);
+    });
   }
 
   deleteFile(pathToDelete) {

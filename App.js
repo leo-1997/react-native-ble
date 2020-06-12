@@ -5,6 +5,9 @@ import BleManager from 'react-native-ble-manager';
 import store from './src/store';
 import MainPage from './src/components/MainPage';
 
+/**
+ * Using react-redux to handle all the operations
+ */
 class App extends Component {
   constructor(props) {
     super(props);
